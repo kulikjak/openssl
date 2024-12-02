@@ -69,6 +69,22 @@ ossl_provider_s_load(VALUE klass, VALUE name)
     return obj;
 }
 
+/*
+ * call-seq:
+ *    OpenSSL::Provider.available(name) -> true | false
+ *
+ * Return whether provider of given name is available on the system.
+ */
+static VALUE
+ossl_provider_s_available(VALUE klass, VALUE name)
+{
+    const char *provider_name_ptr = StringValueCStr(name);
+
+    int ret = OSSL_PROVIDER_available(NULL, provider_name_ptr);
+    VALUE available = ret ? Qtrue : Qfalse;
+    return available;
+}
+
 struct ary_with_state { VALUE ary; int state; };
 struct rb_push_provider_name_args { OSSL_PROVIDER *prov; VALUE ary; };
 
@@ -196,6 +212,7 @@ Init_ossl_provider(void)
     eProviderError = rb_define_class_under(cProvider, "ProviderError", eOSSLError);
 
     rb_undef_alloc_func(cProvider);
+    rb_define_singleton_method(cProvider, "available", ossl_provider_s_available, 1);
     rb_define_singleton_method(cProvider, "load", ossl_provider_s_load, 1);
     rb_define_singleton_method(cProvider, "provider_names", ossl_provider_s_provider_names, 0);
 

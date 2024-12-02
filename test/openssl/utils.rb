@@ -163,6 +163,12 @@ class OpenSSL::TestCase < Test::Unit::TestCase
 
     omit "Only for OpenSSL FIPS"
   end
+
+  def omit_without_legacy
+    return if OpenSSL::Provider.available("legacy")
+
+    omit "Only when legacy provider is available"
+  end
 end
 
 class OpenSSL::SSLTestCase < OpenSSL::TestCase
